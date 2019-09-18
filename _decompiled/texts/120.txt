@@ -1,0 +1,5 @@
+Spelet pausat!
+--- RECORDSEPARATOR ---
+(för muspekaren över spelplanen 
+--- RECORDSEPARATOR ---
+för att starta spelet igen)
