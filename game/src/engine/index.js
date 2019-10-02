@@ -1,8 +1,13 @@
-import {Preloader, Sprites} from "./sprites";
+import {Preloader} from "./sprites";
 import {CANVAS_HEIGHT, CANVAS_WIDTH} from "./constants";
 import {startGameLoop} from "./game_loop";
 import {Position} from "./utilities";
+import {SpawnControl} from "./spawn_control";
+
 import {Pumpa} from "./objects/pumpa";
+import {Clouds} from "./objects/clouds";
+import {Shark} from "./objects/shark";
+import {Kycklings} from "./objects/kycklings";
 
 export class Game {
 
@@ -10,11 +15,21 @@ export class Game {
     this.canvas = null;
     this.ctx = null;
 
-    this.paused = false;
+    this.tick = 0;
+    this.oldTimeStamp = new Date().getTime();
+    this.paused = true;
 
     this.mousePosition = Position(0, 0);
 
+    this.spawnControl = new SpawnControl();
+
+    this.score = 0;
+    this.dead = 0;
+
     this.pumpa = new Pumpa();
+    this.clouds = new Clouds();
+    this.shark = new Shark();
+    this.kycklings = new Kycklings();
 
     this._onCanvasMouseMove = this._onCanvasMouseMove.bind(this);
     this._onCanvasMouseOut = this._onCanvasMouseOut.bind(this);
@@ -29,7 +44,6 @@ export class Game {
   }
 
   _start() {
-    console.log(Sprites.Pumpa1);
     startGameLoop(this);
   }
 

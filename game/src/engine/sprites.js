@@ -11,12 +11,25 @@ import cloud from '../sprites/cloud.png';
 import ground from '../sprites/ground.png';
 import score from '../sprites/score.png';
 import water from '../sprites/water.png';
+import {Position, Size} from "./utilities";
 
 const createImage = path => {
   const image = new Image();
   image.src = path;
   return image;
 };
+
+export const ScorePosition = Position(447, -8);
+export const BackgroundPosition = Position(90, 132);
+export const WaterPosition = Position(0, 296);
+export const GroundHighPosition = Position(-40, 125);
+export const GroundLowPosition = Position(549, 226);
+
+// This is half of the size of the kyckling images, used
+// for the rotation animation
+export const KycklingHalfSize = Size(32, 36);
+export const PumpaHalfSize = Size(74, 50);
+export const PumpaSize = Size(148, 101);
 
 // This might not be the best idea I've ever had, but it makes it possible to use
 // `Sprites.Cloud` etc as a fully loaded Image in the IDE with autocompletion,
