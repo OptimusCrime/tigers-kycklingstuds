@@ -1,8 +1,6 @@
-import '@babel/polyfill';
-
 import { Game } from './engine';
 
-import './styles.less';
+import './styles.css';
 
 document.addEventListener("DOMContentLoaded", () => {
   new Game().init();
