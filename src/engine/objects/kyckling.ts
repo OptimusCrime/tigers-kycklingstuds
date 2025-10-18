@@ -1,8 +1,7 @@
-import {createPosition} from "../utilities";
-import {Sprites} from "../sprites";
-import {Position} from "../types";
-import {GameState} from "../gameState";
-import {TIMESTEP} from "../constants";
+import { GameState } from '../gameState';
+import { Sprites } from '../sprites';
+import { Position } from '../types';
+import { createPosition } from '../utilities';
 
 enum KycklingMode {
   WALK = 'WALK',
@@ -24,10 +23,7 @@ const KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT = 160;
 
 const KYCKLING_ANIMATION_ANIMATION_FPS = 5;
 
-const KYCKLING_ANIMATION_WALKING_FRAMES = [
-  Sprites.KycklingWalk1,
-  Sprites.KycklingWalk2,
-];
+const KYCKLING_ANIMATION_WALKING_FRAMES = [Sprites.KycklingWalk1, Sprites.KycklingWalk2];
 
 const KYCKLING_ANIMATION_WALKING_FRAME = 0;
 const KYCKLING_ANIMATION_WALKING_END_FRAME = KYCKLING_ANIMATION_WALKING_FRAMES.length - 1;
@@ -70,7 +66,7 @@ export class Kyckling {
   public tick(game: GameState, delta: number): Kyckling {
     if (this.mode === KycklingMode.FALL) {
       // Keep rotating, even if the game is paused, as a generous honor to the original game
-      this.rotation += (8 * delta);
+      this.rotation += 8 * delta;
       if (this.rotation >= 360) {
         this.rotation = 0;
       }
@@ -92,10 +88,7 @@ export class Kyckling {
     }
 
     if (this.mode === KycklingMode.WALK) {
-      this.position = createPosition(
-        this.position.x + (2 * delta),
-        this.position.y
-      );
+      this.position = createPosition(this.position.x + 2 * delta, this.position.y);
 
       if (this.position.x >= KYCKLING_WALK_TO_FALL_LIMIT && this.position.x <= KYCKLING_FALL_TO_WALK_SAFE_X_LIMIT) {
         this.mode = KycklingMode.FALL;
@@ -112,8 +105,8 @@ export class Kyckling {
     }
 
     if (this.mode === KycklingMode.FALL) {
-      const tempPositionX = this.position.x + (3 * delta);
-      const tempPositionY = this.position.y + (this.dy * delta);
+      const tempPositionX = this.position.x + 3 * delta;
+      const tempPositionY = this.position.y + this.dy * delta;
       this.dy += delta;
 
       // We're trying to save the kyckling for some additional frames
@@ -137,7 +130,11 @@ export class Kyckling {
         return this;
       }
 
-      if (tempPositionX > KYCKLING_FALL_TO_WALK_SAFE_X_LIMIT && tempPositionY >= KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT && this.dy >= 0) {
+      if (
+        tempPositionX > KYCKLING_FALL_TO_WALK_SAFE_X_LIMIT &&
+        tempPositionY >= KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT &&
+        this.dy >= 0
+      ) {
         this.position = createPosition(tempPositionX, KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT);
         this.mode = KycklingMode.WALK;
         this.rotation = 0;

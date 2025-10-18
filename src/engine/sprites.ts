@@ -1,17 +1,17 @@
+import background from '../sprites/background.png';
+import cloud from '../sprites/cloud.png';
+import ground from '../sprites/ground.png';
 import kycklingAir from '../sprites/kyckling/air.png';
 import kycklingWalk1 from '../sprites/kyckling/walk1.png';
 import kycklingWalk2 from '../sprites/kyckling/walk2.png';
 import pumpa1 from '../sprites/pumpa/pumpa1.png';
 import pumpa2 from '../sprites/pumpa/pumpa2.png';
 import pumpa3 from '../sprites/pumpa/pumpa3.png';
+import score from '../sprites/score.png';
 import sharkLeft from '../sprites/shark/shark_left.png';
 import sharkRight from '../sprites/shark/shark_right.png';
-import background from '../sprites/background.png';
-import cloud from '../sprites/cloud.png';
-import ground from '../sprites/ground.png';
-import score from '../sprites/score.png';
 import water from '../sprites/water.png';
-import {createPosition, createSize} from "./utilities";
+import { createPosition, createSize } from './utilities';
 
 const createImage = (path: string) => {
   const image = new Image();
@@ -47,19 +47,16 @@ export const Sprites = {
   Ground: createImage(ground),
   Score: createImage(score),
   Water: createImage(water),
-};
+} as Record<string, HTMLImageElement>;
 
 export class Preloader {
   private loadAssets(sprite: string) {
     return new Promise<void>((resolve, _) => {
-      // @ts-ignore
       Sprites[sprite].onload = () => resolve();
     });
   }
 
   async execute() {
-    return await Promise.all(
-      Object.keys(Sprites).map(sprite => this.loadAssets(sprite))
-    );
+    return await Promise.all(Object.keys(Sprites).map((sprite) => this.loadAssets(sprite)));
   }
 }

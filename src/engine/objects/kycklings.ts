@@ -1,5 +1,5 @@
-import {Kyckling} from "./kyckling";
-import {GameState} from "../gameState";
+import { GameState } from '../gameState';
+import { Kyckling } from './kyckling';
 
 export class Kycklings {
   private kycklings: Kyckling[];
@@ -18,7 +18,7 @@ export class Kycklings {
 
   public tick(game: GameState, delta: number): void {
     this.kycklings = this.kycklings
-      .filter(kyckling => !kyckling.shouldKill())
-      .map(kyckling => kyckling.tick(game, delta));
+      .filter((kyckling) => !kyckling.shouldKill())
+      .map((kyckling) => kyckling.tick(game, delta));
   }
 }

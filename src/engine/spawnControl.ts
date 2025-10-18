@@ -1,5 +1,5 @@
-import {randomizeDistance} from "./utilities";
-import {GameState} from "./gameState";
+import { GameState } from './gameState';
+import { randomizeDistance } from './utilities';
 
 const FIRST_LEVEL_CHANGE = 5;
 const PAUSE_AFTER_FIRST_WAVE = 4;
@@ -34,17 +34,17 @@ export class SpawnControl {
 
     for (let i = 0; i < numSlots; i++) {
       this.releaseTime.push(
-        (45 * i / numSlots + 45 * (i * 9973 % numSlots) + 45 * pause) // I have no idea
+        (45 * i) / numSlots + 45 * ((i * 9973) % numSlots) + 45 * pause, // I have no idea
       );
     }
 
-    this.nextLevelChange = 5 * numSlots * (1 + numSlots) / 2;
+    this.nextLevelChange = (5 * numSlots * (1 + numSlots)) / 2;
   }
 
   private decreaseQueueWaitingTime(game: GameState, delta: number): void {
     for (let i = 0; i < this.releaseTime.length; i++) {
       if (this.releaseTime[i] <= 0) {
-        this.releaseTime[i] += (RELEASE_TIME_ADDED_DELAY * randomizeDistance());
+        this.releaseTime[i] += RELEASE_TIME_ADDED_DELAY * randomizeDistance();
         this.releaseCount++;
 
         game.getKicklings().add();

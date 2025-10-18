@@ -1,7 +1,7 @@
-import {createPosition} from "../utilities";
-import {KycklingHalfSize, PumpaSize, Sprites} from "../sprites";
-import {Position} from "../types";
-import {Kyckling} from "./kyckling";
+import { KycklingHalfSize, PumpaSize, Sprites } from '../sprites';
+import { Position } from '../types';
+import { createPosition } from '../utilities';
+import { Kyckling } from './kyckling';
 
 const PUMPA_WIDTH = 148;
 const PUMPA_RELATIVE_X_OFFSET = 5;
@@ -13,13 +13,9 @@ const PUMPA_LEFT_MIN = 60;
 const PUMPA_RIGHT_MAX = 420;
 
 // This is used to center the mouse over pumpa, using some magical x offset
-const PUMPA_POSITION_X_OFFSET = (PUMPA_WIDTH / 2) - PUMPA_RELATIVE_X_OFFSET;
+const PUMPA_POSITION_X_OFFSET = PUMPA_WIDTH / 2 - PUMPA_RELATIVE_X_OFFSET;
 
-const PUMPA_ANIMATION_FRAMES = [
-  Sprites.Pumpa1,
-  Sprites.Pumpa2,
-  Sprites.Pumpa3,
-];
+const PUMPA_ANIMATION_FRAMES = [Sprites.Pumpa1, Sprites.Pumpa2, Sprites.Pumpa3];
 
 const PUMPA_ANIMATION_RELATIVE_TICK_LIMIT = 7;
 
@@ -50,10 +46,7 @@ export class Pumpa {
   public tick(mousePosition: Position) {
     this.relativeTick++;
 
-    this.position = createPosition(
-      Pumpa.pumpaXPosition(mousePosition.x),
-      this.position.y
-    );
+    this.position = createPosition(Pumpa.pumpaXPosition(mousePosition.x), this.position.y);
 
     if (this.relativeTick >= PUMPA_ANIMATION_RELATIVE_TICK_LIMIT) {
       this.updateAnimationFrame();
@@ -68,7 +61,7 @@ export class Pumpa {
   public checkBounce(kyckling: Kyckling) {
     // We're kind and allowing the kyckling to survive even if just half of it hit the pumpa
     const kycklingCenter = kyckling.getPosition().x + KycklingHalfSize.width;
-    return kycklingCenter >= this.position.x && kycklingCenter <= (this.position.x + PumpaSize.width);
+    return kycklingCenter >= this.position.x && kycklingCenter <= this.position.x + PumpaSize.width;
   }
 
   private updateAnimationFrame() {
@@ -95,12 +88,6 @@ export class Pumpa {
   }
 
   private static pumpaXPosition(mousePositionX: number) {
-    return Math.min(
-      PUMPA_RIGHT_MAX,
-      Math.max(
-        PUMPA_LEFT_MIN,
-        mousePositionX - PUMPA_POSITION_X_OFFSET
-      )
-    );
+    return Math.min(PUMPA_RIGHT_MAX, Math.max(PUMPA_LEFT_MIN, mousePositionX - PUMPA_POSITION_X_OFFSET));
   }
 }

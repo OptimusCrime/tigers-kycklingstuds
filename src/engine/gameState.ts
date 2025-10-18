@@ -1,30 +1,30 @@
+import { CANVAS_HEIGHT, CANVAS_WIDTH, TIMESTEP } from './constants';
+import { Clouds } from './objects/clouds';
+import { Kycklings } from './objects/kycklings';
+import { Pumpa } from './objects/pumpa';
+import { Shark } from './objects/shark';
+import { SpawnControl } from './spawnControl';
 import {
   BackgroundPosition,
   GroundHighPosition,
-  GroundLowPosition, KycklingHalfSize,
+  GroundLowPosition,
+  KycklingHalfSize,
   Preloader,
   ScorePosition,
   Sprites,
-  WaterPosition
-} from "./sprites";
-import {CANVAS_HEIGHT, CANVAS_WIDTH, TIMESTEP} from "./constants";
-import {createPosition, degreesToRad} from "./utilities";
-import {SpawnControl} from "./spawnControl";
-
-import {Pumpa} from "./objects/pumpa";
-import {Clouds} from "./objects/clouds";
-import {Shark} from "./objects/shark";
-import {Kycklings} from "./objects/kycklings";
-import {Position} from "./types";
+  WaterPosition,
+} from './sprites';
+import { Position } from './types';
+import { createPosition, degreesToRad } from './utilities';
 
 export class GameState {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
 
-  private readonly pumpa :Pumpa;
-  private readonly clouds :Clouds;
-  private readonly shark :Shark;
-  private readonly kycklings :Kycklings;
+  private readonly pumpa: Pumpa;
+  private readonly clouds: Clouds;
+  private readonly shark: Shark;
+  private readonly kycklings: Kycklings;
 
   private readonly spawnControl: SpawnControl;
 
@@ -84,14 +84,14 @@ export class GameState {
     return this.paused;
   }
 
-  public incrementScore() : void {
+  public incrementScore(): void {
     this.score++;
   }
 
   private onCanvasMouseMove(event: MouseEvent) {
     if (this.paused) {
       this.paused = false;
-      return
+      return;
     }
 
     const canvasRelativeOffset = this.canvas.getBoundingClientRect();
@@ -133,7 +133,7 @@ export class GameState {
     window.requestAnimationFrame(() => this.tick());
   }
 
-  private resetScene() : void{
+  private resetScene(): void {
     this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   }
 
@@ -143,112 +143,77 @@ export class GameState {
     this.ctx.fillText('Poäng:', 486, 30);
 
     this.ctx.fillText(`${this.score}`, 577, 30);
-  };
+  }
 
   private writeFramePerSecond(currentTimestamp: number): void {
     const fps = this.calculateFramesPerSecond(currentTimestamp);
 
     if (isNaN(fps)) {
-      return
+      return;
     }
 
     this.ctx.font = '10px Arial';
     this.ctx.fillStyle = 'black';
     this.ctx.fillText(fps.toString(), 5, 10);
-  };
+  }
 
   private updateMovingElements(delta: number): void {
     this.pumpa.tick(this.mousePosition);
     this.clouds.tick(delta);
     this.shark.tick(delta);
-  };
+  }
 
   private updateKycklings(delta: number): void {
     this.kycklings.tick(this, delta);
-  };
+  }
 
   private draw(currentTimestamp: number): void {
-    this.ctx.drawImage(
-      Sprites.Cloud,
-      this.clouds.getCloud1Position().x,
-      this.clouds.getCloud1Position().y
-    );
+    this.ctx.drawImage(Sprites.Cloud, this.clouds.getCloud1Position().x, this.clouds.getCloud1Position().y);
 
     // TODO implement cloud2
 
-    this.ctx.drawImage(
-      Sprites.Score,
-      ScorePosition.x,
-      ScorePosition.y
-    );
+    this.ctx.drawImage(Sprites.Score, ScorePosition.x, ScorePosition.y);
 
     this.writeScoreText();
 
-    this.ctx.drawImage(
-      Sprites.Background,
-      BackgroundPosition.x,
-      BackgroundPosition.y
-    );
+    this.ctx.drawImage(Sprites.Background, BackgroundPosition.x, BackgroundPosition.y);
 
     this.ctx.drawImage(
       this.shark.getSprite(),
       Math.trunc(this.shark.getPosition().x),
-      Math.trunc(this.shark.getPosition().y)
+      Math.trunc(this.shark.getPosition().y),
     );
 
-    this.ctx.drawImage(
-      Sprites.Water,
-      WaterPosition.x,
-      WaterPosition.y
-    );
+    this.ctx.drawImage(Sprites.Water, WaterPosition.x, WaterPosition.y);
 
-    this.ctx.drawImage(
-      Sprites.Ground,
-      GroundHighPosition.x,
-      GroundHighPosition.y
-    );
+    this.ctx.drawImage(Sprites.Ground, GroundHighPosition.x, GroundHighPosition.y);
 
-    this.ctx.drawImage(
-      Sprites.Ground,
-      GroundLowPosition.x,
-      GroundLowPosition.y
-    );
+    this.ctx.drawImage(Sprites.Ground, GroundLowPosition.x, GroundLowPosition.y);
 
-    this.ctx.drawImage(
-      this.pumpa.getSprite(),
-      this.pumpa.getPosition().x,
-      this.pumpa.getPosition().y
-    );
+    this.ctx.drawImage(this.pumpa.getSprite(), this.pumpa.getPosition().x, this.pumpa.getPosition().y);
 
     this.writeFramePerSecond(currentTimestamp);
-  };
+  }
 
   private drawKycklings(): void {
-    this.kycklings.get().map(kyckling => {
+    this.kycklings.get().map((kyckling) => {
       // What would StackOverflow do?
       // https://stackoverflow.com/a/46921702/921563
       this.ctx.save();
 
       this.ctx.translate(
         kyckling.getPosition().x + KycklingHalfSize.width,
-        kyckling.getPosition().y + KycklingHalfSize.height
+        kyckling.getPosition().y + KycklingHalfSize.height,
       );
 
       this.ctx.rotate(degreesToRad(kyckling.getRotation()));
-      this.ctx.translate(
-        -KycklingHalfSize.width,
-        -KycklingHalfSize.height
-      );
+      this.ctx.translate(-KycklingHalfSize.width, -KycklingHalfSize.height);
 
-      this.ctx.drawImage(
-        kyckling.getSprite(),
-        0,
-        0
-      );
+      this.ctx.drawImage(kyckling.getSprite(), 0, 0);
 
       this.ctx.rotate(-degreesToRad(kyckling.getRotation()));
 
       this.ctx.restore();
     });
-  };
+  }
 }
