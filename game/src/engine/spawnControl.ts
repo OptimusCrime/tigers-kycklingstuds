@@ -1,10 +1,15 @@
 import {randomizeDistance} from "./utilities";
+import {GameState} from "./gameState";
 
 const FIRST_LEVEL_CHANGE = 5;
 const PAUSE_AFTER_FIRST_WAVE = 4;
 const RELEASE_TIME_ADDED_DELAY = 45;
 
 export class SpawnControl {
+  private timeslots: number;
+  private releaseTime: number[];
+  private releaseCount: number;
+  private nextLevelChange: number;
 
   constructor() {
     this.timeslots = 0;
@@ -12,18 +17,18 @@ export class SpawnControl {
     this.releaseCount = 0;
     this.nextLevelChange = FIRST_LEVEL_CHANGE;
 
-    this._initReleaseTimeTable(1);
+    this.initReleaseTimeTable(1);
   }
 
-  tick(game) {
+  tick(game: GameState) {
     if (this.releaseCount >= this.nextLevelChange) {
-      this._initReleaseTimeTable(this.timeslots + 1, PAUSE_AFTER_FIRST_WAVE);
+      this.initReleaseTimeTable(this.timeslots + 1, PAUSE_AFTER_FIRST_WAVE);
     }
 
-    this._decreaseQueueWaitingTime(game);
+    this.decreaseQueueWaitingTime(game);
   }
 
-  _initReleaseTimeTable(numSlots, pause = 0) {
+  private initReleaseTimeTable(numSlots: number, pause: number = 0) {
     this.timeslots = numSlots;
     this.releaseTime = [];
 
@@ -36,13 +41,13 @@ export class SpawnControl {
     this.nextLevelChange = 5 * numSlots * (1 + numSlots) / 2;
   }
 
-  _decreaseQueueWaitingTime(game) {
+  private decreaseQueueWaitingTime(game: GameState) {
     for (let i = 0; i < this.releaseTime.length; i++) {
       if (this.releaseTime[i] <= 0) {
         this.releaseTime[i] += (RELEASE_TIME_ADDED_DELAY * randomizeDistance());
         this.releaseCount++;
 
-        game.kycklings.add();
+        game.getKicklings().add();
       }
 
       this.releaseTime[i]--;

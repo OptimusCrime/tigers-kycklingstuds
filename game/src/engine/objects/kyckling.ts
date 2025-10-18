@@ -1,5 +1,7 @@
-import {Position} from "../utilities";
+import {createPosition} from "../utilities";
 import {Sprites} from "../sprites";
+import {Position} from "../types";
+import {GameState} from "../gameState";
 
 const KYCKLING_START_POSITION_X = -65;
 const KYCKLING_START_POSITION_Y = 58;
@@ -28,12 +30,24 @@ const KYCKLING_ANIMATION_WALKING_FRAME = 0;
 const KYCKLING_ANIMATION_WALKING_END_FRAME = KYCKLING_ANIMATION_WALKING_FRAMES.length - 1;
 
 export class Kyckling {
+  private relativeTick : number;
+  private relativeTickWalking : number;
+
+  private position : Position;
+
+  private animationFrame : number;
+
+  private mode : string; // TODO: enum
+  private dy : number;
+  private rotation : number;
+
+  private kill : boolean;
 
   constructor() {
     this.relativeTick = 0;
     this.relativeTickWalking = 0;
 
-    this.position = Position(KYCKLING_START_POSITION_X, KYCKLING_START_POSITION_Y);
+    this.position = createPosition(KYCKLING_START_POSITION_X, KYCKLING_START_POSITION_Y);
 
     this.animationFrame = KYCKLING_ANIMATION_WALKING_FRAME;
 
@@ -44,7 +58,7 @@ export class Kyckling {
     this.kill = false;
   }
 
-  getSprite() {
+  public getSprite() {
     if (this.mode === KYCKLING_MODE_FALL) {
       return Sprites.KycklingAir;
     }
@@ -63,7 +77,7 @@ export class Kyckling {
     return KYCKLING_ANIMATION_WALKING_FRAMES[this.animationFrame];
   }
 
-  tick(game) {
+  public tick(game: GameState) {
     if (this.mode === KYCKLING_MODE_FALL) {
       // Keep rotating, even if the game is paused, as a generous honor to the original game
       this.rotation += 4;
@@ -75,7 +89,7 @@ export class Kyckling {
       this.relativeTickWalking++;
     }
 
-    if (game.paused) {
+    if (game.isPaused()) {
       return this;
     }
 
@@ -86,7 +100,7 @@ export class Kyckling {
     }
 
     if (this.mode === KYCKLING_MODE_WALK) {
-      this.position = Position(
+      this.position = createPosition(
         this.position.x + 2,
         this.position.y
       );
@@ -97,7 +111,7 @@ export class Kyckling {
       }
 
       if (this.position.x >= KYCKLING_SAFE_LIMIT) {
-        game.score++;
+        game.incrementScore();
         this.kill = true;
         return this;
       }
@@ -112,8 +126,8 @@ export class Kyckling {
 
       // We're trying to save the kyckling for some additional frames
       if (tempPositionY >= KYCKLING_FALL_CAPTURE_START && this.dy >= 0) {
-        this.position = Position(tempPositionX, tempPositionY);
-        if (game.pumpa.checkBounce(this)) {
+        this.position = createPosition(tempPositionX, tempPositionY);
+        if (game.getPumpa().checkBounce(this)) {
           this.dy = KYCKLING_DY_FALL_VALUE;
           return this;
         }
@@ -121,10 +135,10 @@ export class Kyckling {
 
       // Last chance at capturing
       if (tempPositionY >= KYCKLING_FALL_CAPTURE_END && this.dy >= 0) {
-        this.position = Position(tempPositionX, KYCKLING_FALL_CAPTURE_END);
+        this.position = createPosition(tempPositionX, KYCKLING_FALL_CAPTURE_END);
         this.dy = KYCKLING_DY_FALL_VALUE;
 
-        if (!game.pumpa.checkBounce(this)) {
+        if (!game.getPumpa().checkBounce(this)) {
           // TODO handle death better
           this.kill = true;
         }
@@ -133,16 +147,28 @@ export class Kyckling {
       }
 
       if (tempPositionX > KYCKLING_FALL_TO_WALK_SAFE_X_LIMIT && tempPositionY >= KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT && this.dy >= 0) {
-        this.position = Position(tempPositionX, KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT);
+        this.position = createPosition(tempPositionX, KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT);
         this.mode = KYCKLING_MODE_WALK;
         this.rotation = 0;
         return this;
       }
 
-      this.position = Position(tempPositionX, tempPositionY);
+      this.position = createPosition(tempPositionX, tempPositionY);
       return this;
     }
 
     return this;
+  }
+
+  public getPosition(): Position {
+    return this.position;
+  }
+
+  public getRotation(): number {
+    return this.rotation;
+  }
+
+  public shouldKill() {
+    return this.kill;
   }
 }

@@ -1,5 +1,7 @@
-import {Position} from "../utilities";
+import {createPosition} from "../utilities";
 import {KycklingHalfSize, PumpaSize, Sprites} from "../sprites";
+import {Position} from "../types";
+import {Kyckling} from "./kyckling";
 
 const PUMPA_WIDTH = 148;
 const PUMPA_RELATIVE_X_OFFSET = 5;
@@ -28,38 +30,47 @@ const PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE = 'increase';
 const PUMPA_ANIMATION_FRAMES_DIRECTION_DECREASE = 'decrease';
 
 export class Pumpa {
+  private relativeTick: number;
+  private position: Position;
+  private animationFrame: number;
+  private animationFramesDirection: string; // TODO: enum
+
   constructor() {
     this.relativeTick = 0;
-    this.position = Position(PUMPA_START_POSITION_X, PUMPA_START_POSITION_Y);
+    this.position = createPosition(PUMPA_START_POSITION_X, PUMPA_START_POSITION_Y);
     this.animationFrame = PUMPA_ANIMATION_START_FRAME;
     this.animationFramesDirection = PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE;
   }
 
-  getSprite() {
+  public getSprite() {
     return PUMPA_ANIMATION_FRAMES[this.animationFrame];
   }
 
-  tick(mousePosition) {
+  public tick(mousePosition: Position) {
     this.relativeTick++;
 
-    this.position = Position(
-      Pumpa._pumpaXPosition(mousePosition.x),
+    this.position = createPosition(
+      Pumpa.pumpaXPosition(mousePosition.x),
       this.position.y
     );
 
     if (this.relativeTick >= PUMPA_ANIMATION_RELATIVE_TICK_LIMIT) {
-      this._updateAnimationFrame();
+      this.updateAnimationFrame();
       this.relativeTick = 0;
     }
   }
 
-  checkBounce(kyckling) {
+  public getPosition(): Position {
+    return this.position;
+  }
+
+  public checkBounce(kyckling: Kyckling) {
     // We're kind and allowing the kyckling to survive even if just half of it hit the pumpa
-    const kycklingCenter = kyckling.position.x + KycklingHalfSize.width;
+    const kycklingCenter = kyckling.getPosition().x + KycklingHalfSize.width;
     return kycklingCenter >= this.position.x && kycklingCenter <= (this.position.x + PumpaSize.width);
   }
 
-  _updateAnimationFrame() {
+  private updateAnimationFrame() {
     if (this.animationFramesDirection === PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE) {
       const newFrame = this.animationFrame + 1;
       if (newFrame > PUMPA_ANIMATION_END_FRAME) {
@@ -82,7 +93,7 @@ export class Pumpa {
     this.animationFrame = newFrame;
   }
 
-  static _pumpaXPosition(mousePositionX) {
+  private static pumpaXPosition(mousePositionX: number) {
     return Math.min(
       PUMPA_RIGHT_MAX,
       Math.max(

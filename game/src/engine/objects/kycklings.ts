@@ -1,23 +1,24 @@
-import {Position} from "../utilities";
 import {Kyckling} from "./kyckling";
+import {GameState} from "../gameState";
 
 export class Kycklings {
+  private kycklings: Kyckling[];
 
   constructor() {
     this.kycklings = [];
   }
 
-  add() {
+  public add() {
     this.kycklings.push(new Kyckling());
   }
 
-  get() {
+  public get() {
     return this.kycklings;
   }
 
-  tick(game) {
+  public tick(game: GameState) {
     this.kycklings = this.kycklings
-      .filter(kyckling => !kyckling.kill)
+      .filter(kyckling => !kyckling.shouldKill())
       .map(kyckling => kyckling.tick(game));
   }
 }

@@ -1,7 +1,7 @@
-import { Game } from './engine';
+import { GameState } from './engine/gameState';
 
 import './styles.css';
 
 document.addEventListener("DOMContentLoaded", () => {
-  new Game().init();
+  new GameState().run();
 });
