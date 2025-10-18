@@ -6,6 +6,7 @@ const SHARK_LEFT_MIN = 100;
 const SHARK_RIGHT_MAX = 520;
 
 const SHARK_POSITION_Y = 285;
+const SHARK_DISTANCE = 12;
 
 export class Shark {
   private position: Position;
@@ -19,7 +20,7 @@ export class Shark {
   }
 
   public tick(delta: number): void {
-    const newSharkPosition = this.position.x + (this.direction === Direction.RIGHT ? 4 : -4) * delta;
+    const newSharkPosition = this.position.x + SHARK_DISTANCE * (this.direction === Direction.RIGHT ? 1 : -1) * delta;
 
     if (this.direction === Direction.RIGHT && newSharkPosition >= SHARK_RIGHT_MAX) {
       this.direction = Direction.LEFT;
