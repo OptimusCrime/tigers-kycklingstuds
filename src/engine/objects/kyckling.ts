@@ -156,7 +156,7 @@ export class Kyckling {
     return this.rotation;
   }
 
-  public shouldKill() {
+  public shouldKill(): boolean {
     return this.kill;
   }
 }

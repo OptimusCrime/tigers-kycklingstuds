@@ -8,11 +8,11 @@ export class Kycklings {
     this.kycklings = [];
   }
 
-  public add() {
+  public add(): void {
     this.kycklings.push(new Kyckling());
   }
 
-  public get() {
+  public get(): Kyckling[] {
     return this.kycklings;
   }
 

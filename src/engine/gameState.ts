@@ -114,7 +114,7 @@ export class GameState {
     return increment / TIMESTEP;
   }
 
-  tick(): void {
+  private tick(): void {
     const currentTimestamp = new Date().getTime();
     const delta = this.calculateDelta(currentTimestamp);
 

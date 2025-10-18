@@ -39,11 +39,11 @@ export class Pumpa {
     this.animationFramesDirection = PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE;
   }
 
-  public getSprite() {
+  public getSprite(): HTMLImageElement {
     return PUMPA_ANIMATION_FRAMES[this.animationFrame];
   }
 
-  public tick(mousePosition: Position) {
+  public tick(mousePosition: Position): void {
     this.relativeTick++;
 
     this.position = createPosition(Pumpa.pumpaXPosition(mousePosition.x), this.position.y);
@@ -58,13 +58,13 @@ export class Pumpa {
     return this.position;
   }
 
-  public checkBounce(kyckling: Kyckling) {
+  public checkBounce(kyckling: Kyckling): boolean {
     // We're kind and allowing the kyckling to survive even if just half of it hit the pumpa
     const kycklingCenter = kyckling.getPosition().x + KycklingHalfSize.width;
     return kycklingCenter >= this.position.x && kycklingCenter <= this.position.x + PumpaSize.width;
   }
 
-  private updateAnimationFrame() {
+  private updateAnimationFrame(): void {
     if (this.animationFramesDirection === PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE) {
       const newFrame = this.animationFrame + 1;
       if (newFrame > PUMPA_ANIMATION_END_FRAME) {
@@ -87,7 +87,7 @@ export class Pumpa {
     this.animationFrame = newFrame;
   }
 
-  private static pumpaXPosition(mousePositionX: number) {
+  private static pumpaXPosition(mousePositionX: number): number {
     return Math.min(PUMPA_RIGHT_MAX, Math.max(PUMPA_LEFT_MIN, mousePositionX - PUMPA_POSITION_X_OFFSET));
   }
 }
