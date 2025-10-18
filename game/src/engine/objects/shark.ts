@@ -1,37 +1,34 @@
 import {createPosition} from "../utilities";
 import {Sprites} from "../sprites";
-import {Position} from "../types";
+import {Direction, Position} from "../types";
 
 const SHARK_LEFT_MIN = 100;
 const SHARK_RIGHT_MAX = 520;
 
 const SHARK_POSITION_Y = 285;
 
-const SHARK_DIRECTION_LEFT = 'left';
-const SHARK_DIRECTION_RIGHT = 'right';
-
 export class Shark {
 
   private position: Position;
   private sprite: HTMLImageElement;
-  private direction: string; // TODO: enm
+  private direction: Direction;
 
   constructor() {
     this.position = createPosition(SHARK_LEFT_MIN, SHARK_POSITION_Y);
     this.sprite = Sprites.SharkRight;
-    this.direction = SHARK_DIRECTION_RIGHT;
+    this.direction = Direction.RIGHT;
   }
 
-  public tick() {
-    const newSharkPosition = this.position.x + ((this.direction === SHARK_DIRECTION_RIGHT) ? 4 : -4);
+  public tick(delta: number): void {
+    const newSharkPosition = this.position.x + (((this.direction === Direction.RIGHT) ? 4 : -4) * delta);
 
-    if (this.direction === SHARK_DIRECTION_RIGHT && newSharkPosition >= SHARK_RIGHT_MAX) {
-      this.direction = SHARK_DIRECTION_LEFT;
+    if (this.direction === Direction.RIGHT && newSharkPosition >= SHARK_RIGHT_MAX) {
+      this.direction = Direction.LEFT;
       this.sprite = Sprites.SharkLeft;
       this.position = createPosition(SHARK_RIGHT_MAX, SHARK_POSITION_Y);
     }
-    else if (this.direction === SHARK_DIRECTION_LEFT && newSharkPosition <= SHARK_LEFT_MIN) {
-      this.direction = SHARK_DIRECTION_RIGHT;
+    else if (this.direction === Direction.LEFT && newSharkPosition <= SHARK_LEFT_MIN) {
+      this.direction = Direction.RIGHT;
       this.sprite = Sprites.SharkRight;
       this.position = createPosition(SHARK_LEFT_MIN, SHARK_POSITION_Y);
     }
@@ -39,11 +36,11 @@ export class Shark {
     this.position = createPosition(newSharkPosition, SHARK_POSITION_Y);
   }
 
-  public getSprite() {
+  public getSprite(): HTMLImageElement {
     return this.sprite;
   }
 
-  public getPosition() {
+  public getPosition() : Position{
     return this.position;
   }
 }

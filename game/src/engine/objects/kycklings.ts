@@ -16,9 +16,9 @@ export class Kycklings {
     return this.kycklings;
   }
 
-  public tick(game: GameState) {
+  public tick(game: GameState, delta: number): void {
     this.kycklings = this.kycklings
       .filter(kyckling => !kyckling.shouldKill())
-      .map(kyckling => kyckling.tick(game));
+      .map(kyckling => kyckling.tick(game, delta));
   }
 }

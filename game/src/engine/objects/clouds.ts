@@ -11,19 +11,20 @@ export class Clouds {
 
   constructor() {
     this.cloud1 = createPosition(CLOUD1_START_POSITION_X, CLOUD1_START_POSITION_Y);
-    // TODO implement cloud2
+    // TODO: Add cloud2
   }
 
-  public tick() {
-    this.cloud1 = this.updateCloud1Position();
+  public tick(delta: number): void {
+    this.cloud1 = this.updateCloud1Position(delta);
+    // TODO: Animate cloud2
   }
 
-  public getCloud1Position() {
+  public getCloud1Position(): Position {
     return this.cloud1;
   }
 
-  private updateCloud1Position() {
-    const newCloudXPosition = this.cloud1.x + 2;
+  private updateCloud1Position(delta: number): Position {
+    const newCloudXPosition = this.cloud1.x + (2 * delta);
 
     if (newCloudXPosition >= CLOUD_MAX_RIGHT) {
       return createPosition(
@@ -33,7 +34,7 @@ export class Clouds {
     }
 
     return createPosition(
-      this.cloud1.x + 2,
+      newCloudXPosition,
       this.cloud1.y
     );
   }

@@ -58,7 +58,7 @@ export class Preloader {
     });
   }
 
-  async run() {
+  async execute() {
     return await Promise.all(
       Object.keys(Sprites).map(sprite => this.loadAssets(sprite))
     );

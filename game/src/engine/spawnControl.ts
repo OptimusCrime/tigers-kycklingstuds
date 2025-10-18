@@ -20,15 +20,15 @@ export class SpawnControl {
     this.initReleaseTimeTable(1);
   }
 
-  tick(game: GameState) {
+  public tick(game: GameState, delta: number): void {
     if (this.releaseCount >= this.nextLevelChange) {
       this.initReleaseTimeTable(this.timeslots + 1, PAUSE_AFTER_FIRST_WAVE);
     }
 
-    this.decreaseQueueWaitingTime(game);
+    this.decreaseQueueWaitingTime(game, delta);
   }
 
-  private initReleaseTimeTable(numSlots: number, pause: number = 0) {
+  private initReleaseTimeTable(numSlots: number, pause: number = 0): void {
     this.timeslots = numSlots;
     this.releaseTime = [];
 
@@ -41,7 +41,7 @@ export class SpawnControl {
     this.nextLevelChange = 5 * numSlots * (1 + numSlots) / 2;
   }
 
-  private decreaseQueueWaitingTime(game: GameState) {
+  private decreaseQueueWaitingTime(game: GameState, delta: number): void {
     for (let i = 0; i < this.releaseTime.length; i++) {
       if (this.releaseTime[i] <= 0) {
         this.releaseTime[i] += (RELEASE_TIME_ADDED_DELAY * randomizeDistance());
@@ -50,7 +50,7 @@ export class SpawnControl {
         game.getKicklings().add();
       }
 
-      this.releaseTime[i]--;
+      this.releaseTime[i] -= delta;
     }
   }
 }

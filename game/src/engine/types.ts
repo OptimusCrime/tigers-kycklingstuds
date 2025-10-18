@@ -7,3 +7,8 @@ export interface Size {
   width: number
   height: number
 }
+
+export enum Direction {
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT'
+}
