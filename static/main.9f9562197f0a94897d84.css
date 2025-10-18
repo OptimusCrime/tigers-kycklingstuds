@@ -1,0 +1,12 @@
+body {
+  background-color: #003480;
+  text-align: center;
+  margin-top: 58px;
+}
+
+canvas {
+  cursor: pointer;
+  width: 640px;
+  height: 400px;
+  background-color: #809cc9;
+}
