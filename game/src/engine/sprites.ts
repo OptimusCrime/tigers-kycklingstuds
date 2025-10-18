@@ -28,7 +28,6 @@ export const GroundLowPosition = createPosition(549, 226);
 // This is half of the size of the kyckling images, used
 // for the rotation animation
 export const KycklingHalfSize = createSize(32, 36);
-export const PumpaHalfSize = createSize(74, 50);
 export const PumpaSize = createSize(148, 101);
 
 // This might not be the best idea I've ever had, but it makes it possible to use

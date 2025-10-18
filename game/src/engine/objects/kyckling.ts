@@ -2,6 +2,7 @@ import {createPosition} from "../utilities";
 import {Sprites} from "../sprites";
 import {Position} from "../types";
 import {GameState} from "../gameState";
+import {TIMESTEP} from "../constants";
 
 enum KycklingMode {
   WALK = 'WALK',
@@ -21,7 +22,7 @@ const KYCKLING_FALL_CAPTURE_END = 290;
 const KYCKLING_FALL_TO_WALK_SAFE_X_LIMIT = 520;
 const KYCKLING_FALL_TO_WALK_SAFE_Y_LIMIT = 160;
 
-const KYCKLING_ANIMATION_WALKING_RELATIVE_TICK_LIMIT = 5;
+const KYCKLING_ANIMATION_ANIMATION_FPS = 5;
 
 const KYCKLING_ANIMATION_WALKING_FRAMES = [
   Sprites.KycklingWalk1,
@@ -32,20 +33,20 @@ const KYCKLING_ANIMATION_WALKING_FRAME = 0;
 const KYCKLING_ANIMATION_WALKING_END_FRAME = KYCKLING_ANIMATION_WALKING_FRAMES.length - 1;
 
 export class Kyckling {
-  private relativeTickWalking : number;
+  private accumulator: number;
 
-  private position : Position;
+  private position: Position;
 
-  private animationFrame : number;
+  private animationFrame: number;
 
-  private mode : KycklingMode;
-  private dy : number;
-  private rotation : number;
+  private mode: KycklingMode;
+  private dy: number;
+  private rotation: number;
 
-  private kill : boolean;
+  private kill: boolean;
 
   constructor() {
-    this.relativeTickWalking = 0;
+    this.accumulator = 0;
 
     this.position = createPosition(KYCKLING_START_POSITION_X, KYCKLING_START_POSITION_Y);
 
@@ -63,30 +64,27 @@ export class Kyckling {
       return Sprites.KycklingAir;
     }
 
-    if (this.relativeTickWalking >= KYCKLING_ANIMATION_WALKING_RELATIVE_TICK_LIMIT) {
-      this.relativeTickWalking = 0;
-      const newFrame = this.animationFrame + 1;
-      if (newFrame > KYCKLING_ANIMATION_WALKING_END_FRAME) {
-        this.animationFrame = KYCKLING_ANIMATION_WALKING_FRAME;
-      }
-      else {
-        this.animationFrame = newFrame;
-      }
-    }
-
     return KYCKLING_ANIMATION_WALKING_FRAMES[this.animationFrame];
   }
 
   public tick(game: GameState, delta: number): Kyckling {
     if (this.mode === KycklingMode.FALL) {
       // Keep rotating, even if the game is paused, as a generous honor to the original game
-      this.rotation += (4 * delta);
+      this.rotation += (8 * delta);
       if (this.rotation >= 360) {
         this.rotation = 0;
       }
-    }
-    else if (this.mode === KycklingMode.WALK) {
-      this.relativeTickWalking += delta;
+    } else if (this.mode === KycklingMode.WALK) {
+      this.accumulator += delta;
+      if (this.accumulator >= KYCKLING_ANIMATION_ANIMATION_FPS) {
+        this.accumulator -= KYCKLING_ANIMATION_ANIMATION_FPS;
+        const newFrame = this.animationFrame + 1;
+        if (newFrame > KYCKLING_ANIMATION_WALKING_END_FRAME) {
+          this.animationFrame = KYCKLING_ANIMATION_WALKING_FRAME;
+        } else {
+          this.animationFrame = newFrame;
+        }
+      }
     }
 
     if (game.isPaused()) {
@@ -116,7 +114,7 @@ export class Kyckling {
     if (this.mode === KycklingMode.FALL) {
       const tempPositionX = this.position.x + (3 * delta);
       const tempPositionY = this.position.y + (this.dy * delta);
-      this.dy++;
+      this.dy += delta;
 
       // We're trying to save the kyckling for some additional frames
       if (tempPositionY >= KYCKLING_FALL_CAPTURE_START && this.dy >= 0) {
@@ -133,7 +131,6 @@ export class Kyckling {
         this.dy = KYCKLING_DY_FALL_VALUE;
 
         if (!game.getPumpa().checkBounce(this)) {
-          // TODO handle death better
           this.kill = true;
         }
 

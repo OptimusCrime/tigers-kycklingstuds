@@ -7,7 +7,7 @@ import {
   Sprites,
   WaterPosition
 } from "./sprites";
-import {CANVAS_HEIGHT, CANVAS_WIDTH} from "./constants";
+import {CANVAS_HEIGHT, CANVAS_WIDTH, TIMESTEP} from "./constants";
 import {createPosition, degreesToRad} from "./utilities";
 import {SpawnControl} from "./spawnControl";
 
@@ -109,13 +109,14 @@ export class GameState {
     return Math.round(1 / ((currentTimeStamp - this.oldTimeStamp) / 1000));
   }
 
-  private calculateDelta(): number {
-    return 1
+  private calculateDelta(currentTimestamp: number): number {
+    const increment = currentTimestamp - this.oldTimeStamp;
+    return increment / TIMESTEP;
   }
 
   tick(): void {
     const currentTimestamp = new Date().getTime();
-    const delta = this.calculateDelta();
+    const delta = this.calculateDelta(currentTimestamp);
 
     this.resetScene();
     this.updateMovingElements(delta);
@@ -123,7 +124,9 @@ export class GameState {
     this.draw(currentTimestamp);
     this.drawKycklings();
 
-    this.spawnControl.tick(this, delta);
+    if (!this.paused) {
+      this.spawnControl.tick(this, delta);
+    }
 
     this.oldTimeStamp = currentTimestamp;
 
@@ -189,8 +192,8 @@ export class GameState {
 
     this.ctx.drawImage(
       this.shark.getSprite(),
-      this.shark.getPosition().x,
-      this.shark.getPosition().y
+      Math.trunc(this.shark.getPosition().x),
+      Math.trunc(this.shark.getPosition().y)
     );
 
     this.ctx.drawImage(

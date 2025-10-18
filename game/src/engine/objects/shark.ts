@@ -26,11 +26,14 @@ export class Shark {
       this.direction = Direction.LEFT;
       this.sprite = Sprites.SharkLeft;
       this.position = createPosition(SHARK_RIGHT_MAX, SHARK_POSITION_Y);
+      return
     }
-    else if (this.direction === Direction.LEFT && newSharkPosition <= SHARK_LEFT_MIN) {
+
+    if (this.direction === Direction.LEFT && newSharkPosition <= SHARK_LEFT_MIN) {
       this.direction = Direction.RIGHT;
       this.sprite = Sprites.SharkRight;
       this.position = createPosition(SHARK_LEFT_MIN, SHARK_POSITION_Y);
+      return
     }
 
     this.position = createPosition(newSharkPosition, SHARK_POSITION_Y);

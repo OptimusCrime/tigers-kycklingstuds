@@ -24,7 +24,7 @@ export class Clouds {
   }
 
   private updateCloud1Position(delta: number): Position {
-    const newCloudXPosition = this.cloud1.x + (2 * delta);
+    const newCloudXPosition = this.cloud1.x + (3 * delta);
 
     if (newCloudXPosition >= CLOUD_MAX_RIGHT) {
       return createPosition(

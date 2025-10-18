@@ -30,6 +30,7 @@ const PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE = 'increase';
 const PUMPA_ANIMATION_FRAMES_DIRECTION_DECREASE = 'decrease';
 
 export class Pumpa {
+  // TODO: Change to accumulator
   private relativeTick: number;
   private position: Position;
   private animationFrame: number;
