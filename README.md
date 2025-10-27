@@ -10,6 +10,8 @@ play more or less like the old game though.
 
 You can play the game here: [optimuscrime.github.io/tigers-kycklingstuds](https://optimuscrime.github.io/tigers-kycklingstuds).
 
+![Screenshot of the game](_docs/screenshot.png)
+
 ## Disclaimer
 
 I do not own the assets used in this game.

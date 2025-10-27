@@ -124,6 +124,9 @@ export class Kyckling {
         this.dy = KYCKLING_DY_FALL_VALUE;
 
         if (!game.getPumpa().checkBounce(this)) {
+          game.incrementDead();
+          game.addTombstone();
+
           this.kill = true;
         }
 

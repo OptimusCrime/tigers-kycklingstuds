@@ -12,3 +12,8 @@ export enum Direction {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
 }
+
+export enum AnimationFrameDirection {
+  INCREASE = 'INCREASE',
+  DECREASE = 'DECREASE',
+}

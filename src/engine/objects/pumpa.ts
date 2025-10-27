@@ -1,5 +1,5 @@
 import { KycklingHalfSize, PumpaSize, Sprites } from '../sprites';
-import { Position } from '../types';
+import { AnimationFrameDirection, Position } from '../types';
 import { createPosition } from '../utilities';
 import { Kyckling } from './kyckling';
 
@@ -17,40 +17,35 @@ const PUMPA_POSITION_X_OFFSET = PUMPA_WIDTH / 2 - PUMPA_RELATIVE_X_OFFSET;
 
 const PUMPA_ANIMATION_FRAMES = [Sprites.Pumpa1, Sprites.Pumpa2, Sprites.Pumpa3];
 
-const PUMPA_ANIMATION_RELATIVE_TICK_LIMIT = 20;
+const PUMPA_ANIMATION_RELATIVE_TICK_LIMIT = 10;
 
 const PUMPA_ANIMATION_START_FRAME = 0;
 const PUMPA_ANIMATION_END_FRAME = PUMPA_ANIMATION_FRAMES.length - 1;
 
-const PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE = 'increase';
-const PUMPA_ANIMATION_FRAMES_DIRECTION_DECREASE = 'decrease';
-
 export class Pumpa {
-  // TODO: Change to accumulator
-  private relativeTick: number;
+  private accumulator: number;
   private position: Position;
   private animationFrame: number;
-  private animationFramesDirection: string; // TODO: enum
+  private animationFramesDirection: AnimationFrameDirection;
 
   constructor() {
-    this.relativeTick = 0;
+    this.accumulator = 0;
     this.position = createPosition(PUMPA_START_POSITION_X, PUMPA_START_POSITION_Y);
     this.animationFrame = PUMPA_ANIMATION_START_FRAME;
-    this.animationFramesDirection = PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE;
+    this.animationFramesDirection = AnimationFrameDirection.INCREASE;
   }
 
   public getSprite(): HTMLImageElement {
     return PUMPA_ANIMATION_FRAMES[this.animationFrame];
   }
 
-  public tick(mousePosition: Position): void {
-    this.relativeTick++;
+  public tick(delta: number, mousePosition: Position): void {
+    this.accumulator += delta;
 
     this.position = createPosition(Pumpa.pumpaXPosition(mousePosition.x), this.position.y);
 
-    if (this.relativeTick >= PUMPA_ANIMATION_RELATIVE_TICK_LIMIT) {
+    if (this.accumulator >= PUMPA_ANIMATION_RELATIVE_TICK_LIMIT) {
       this.updateAnimationFrame();
-      this.relativeTick = 0;
     }
   }
 
@@ -65,11 +60,13 @@ export class Pumpa {
   }
 
   private updateAnimationFrame(): void {
-    if (this.animationFramesDirection === PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE) {
+    this.accumulator -= PUMPA_ANIMATION_RELATIVE_TICK_LIMIT;
+
+    if (this.animationFramesDirection === AnimationFrameDirection.INCREASE) {
       const newFrame = this.animationFrame + 1;
       if (newFrame > PUMPA_ANIMATION_END_FRAME) {
         this.animationFrame = PUMPA_ANIMATION_END_FRAME;
-        this.animationFramesDirection = PUMPA_ANIMATION_FRAMES_DIRECTION_DECREASE;
+        this.animationFramesDirection = AnimationFrameDirection.DECREASE;
         return;
       }
 
@@ -81,7 +78,7 @@ export class Pumpa {
     const newFrame = this.animationFrame - 1;
     if (newFrame <= PUMPA_ANIMATION_START_FRAME) {
       this.animationFrame = PUMPA_ANIMATION_START_FRAME;
-      this.animationFramesDirection = PUMPA_ANIMATION_FRAMES_DIRECTION_INCREASE;
+      this.animationFramesDirection = AnimationFrameDirection.INCREASE;
     }
 
     this.animationFrame = newFrame;

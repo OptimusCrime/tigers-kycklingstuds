@@ -5,3 +5,5 @@ export const createSize = (width: number, height: number): Size => ({ width, hei
 
 export const degreesToRad = (degrees: number): number => (Math.PI / 180) * degrees;
 export const randomizeDistance = (): number => 3 + Math.floor(Math.random() * 1.3333);
+
+export const randomizeNumberBetween = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);

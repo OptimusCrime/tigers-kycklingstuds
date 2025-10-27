@@ -3,15 +3,19 @@ import { Clouds } from './objects/clouds';
 import { Kycklings } from './objects/kycklings';
 import { Pumpa } from './objects/pumpa';
 import { Shark } from './objects/shark';
+import { Tiger } from './objects/tiger';
+import { Tombstones } from './objects/tombstones';
 import { SpawnControl } from './spawnControl';
 import {
   BackgroundPosition,
+  DeadPosition,
   GroundHighPosition,
   GroundLowPosition,
   KycklingHalfSize,
   Preloader,
   ScorePosition,
   Sprites,
+  TigerPosition,
   WaterPosition,
 } from './sprites';
 import { Position } from './types';
@@ -21,9 +25,11 @@ export class GameState {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
 
+  private readonly tiger: Tiger;
   private readonly pumpa: Pumpa;
   private readonly clouds: Clouds;
   private readonly shark: Shark;
+  private readonly tombstones: Tombstones;
   private readonly kycklings: Kycklings;
 
   private readonly spawnControl: SpawnControl;
@@ -33,6 +39,7 @@ export class GameState {
 
   private mousePosition: Position;
 
+  private dead: number;
   private score: number;
 
   constructor() {
@@ -58,10 +65,13 @@ export class GameState {
     this.spawnControl = new SpawnControl();
 
     this.score = 0;
+    this.dead = 0;
 
+    this.tiger = new Tiger();
     this.pumpa = new Pumpa();
     this.clouds = new Clouds();
     this.shark = new Shark();
+    this.tombstones = new Tombstones();
     this.kycklings = new Kycklings();
   }
 
@@ -80,12 +90,20 @@ export class GameState {
     return this.kycklings;
   }
 
+  public addTombstone(): void {
+    return this.tombstones.add();
+  }
+
   public isPaused(): boolean {
     return this.paused;
   }
 
   public incrementScore(): void {
     this.score++;
+  }
+
+  public incrementDead(): void {
+    this.dead++;
   }
 
   private onCanvasMouseMove(event: MouseEvent) {
@@ -111,7 +129,12 @@ export class GameState {
 
   private calculateDelta(currentTimestamp: number): number {
     const increment = currentTimestamp - this.oldTimeStamp;
-    return increment / TIMESTEP;
+    const delta = increment / TIMESTEP;
+    if (delta > 1) {
+      return 1;
+    }
+
+    return delta;
   }
 
   private tick(): void {
@@ -120,8 +143,11 @@ export class GameState {
 
     this.resetScene();
     this.updateMovingElements(delta);
-    this.updateKycklings(delta);
+    this.tiger.tick(delta);
+    this.kycklings.tick(this, delta);
+    this.tombstones.tick(delta);
     this.draw(currentTimestamp);
+    this.drawTombstones();
     this.drawKycklings();
 
     if (!this.paused) {
@@ -137,12 +163,18 @@ export class GameState {
     this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   }
 
-  private writeScoreText(): void {
+  private drawScore(): void {
+    this.ctx.drawImage(Sprites.Score, ScorePosition.x, ScorePosition.y);
     this.ctx.font = 'bold 26px Arial';
     this.ctx.fillStyle = 'black';
-    this.ctx.fillText('Poäng:', 486, 30);
+    this.ctx.fillText(`Poäng: ${this.score}`, 475, 30);
+  }
 
-    this.ctx.fillText(`${this.score}`, 577, 30);
+  private drawDead(): void {
+    this.ctx.drawImage(Sprites.Score, DeadPosition.x, DeadPosition.y);
+    this.ctx.font = 'bold 26px Arial';
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillText(`Döda: ${this.dead}`, 279, 30);
   }
 
   private writeFramePerSecond(currentTimestamp: number): void {
@@ -158,25 +190,21 @@ export class GameState {
   }
 
   private updateMovingElements(delta: number): void {
-    this.pumpa.tick(this.mousePosition);
+    this.pumpa.tick(delta, this.mousePosition);
     this.clouds.tick(delta);
     this.shark.tick(delta);
-  }
-
-  private updateKycklings(delta: number): void {
-    this.kycklings.tick(this, delta);
   }
 
   private draw(currentTimestamp: number): void {
     this.ctx.drawImage(Sprites.Cloud, this.clouds.getCloud1Position().x, this.clouds.getCloud1Position().y);
 
     // TODO implement cloud2
-
-    this.ctx.drawImage(Sprites.Score, ScorePosition.x, ScorePosition.y);
-
-    this.writeScoreText();
+    this.drawScore();
+    this.drawDead();
 
     this.ctx.drawImage(Sprites.Background, BackgroundPosition.x, BackgroundPosition.y);
+
+    this.ctx.drawImage(this.tiger.getSprite(), TigerPosition.x, TigerPosition.y);
 
     this.ctx.drawImage(
       this.shark.getSprite(),
@@ -193,6 +221,14 @@ export class GameState {
     this.ctx.drawImage(this.pumpa.getSprite(), this.pumpa.getPosition().x, this.pumpa.getPosition().y);
 
     this.writeFramePerSecond(currentTimestamp);
+  }
+  private drawTombstones(): void {
+    this.tombstones.get().map((tombstone) => {
+      const position = tombstone.getPosition();
+      this.ctx.drawImage(tombstone.getSprite(), position.x, position.y);
+
+      this.ctx.restore();
+    });
   }
 
   private drawKycklings(): void {
